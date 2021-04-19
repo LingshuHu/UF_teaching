@@ -19,7 +19,7 @@ rt <- rtweet::search_tweets(
 )
 
 ## save tweets
-#saveRDS(rt, "UF_teaching/data/florida_gators_football.rds")
+#saveRDS(rt, "data/florida_gators_football.rds")
 
 ###################### Word clouds #########################
 
@@ -49,11 +49,8 @@ wordcloud::wordcloud(
   min.freq = 1,
   max.words=200,
   rot.per=0.35, 
-  #max.words = 20, 
   random.color = FALSE, 
   colors=brewer.pal(8, "Dark2")
-  #colors = c("grey", "skyblue", "green3", "orange", "tomato")
-  #scale = c(4, 0.75)
 )
 
 
