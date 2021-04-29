@@ -12,9 +12,9 @@ check.packages(c("wordcloud", "ggplot2", "ggthemes", "rtweet", "dplyr", "quanted
 
 ################ Obtain tweets ###################
 ## get tweets via keywords
-rt <- rtweet::search_tweets(
+rt <- search_tweets(
   "COVID", # key words for searching
-  n = 1000, 
+  n = 300, 
   include_rts = TRUE, 
   lang = "en", 
   retryonratelimit = FALSE
@@ -26,11 +26,10 @@ write.csv(rt, "data/COVID_Tweets.csv")
 rt <- read.csv("data/COVID_Tweets.csv")
 
 ## get tweets via user names
-usr <- rtweet::get_timeline(
-  "nytimes", 
-  n = 1000, 
-  token = rtweet::bearer_token(), 
-  check = F
+usr <- get_timeline(
+  "nytimes", # Twitter username 
+  n = 300, 
+  check = FALSE
 )
 
 ################# Explore Twitter data ######################
@@ -44,12 +43,13 @@ rt$location[1:5]
 
 rt[1:3, 1:5]
 
-rt2 <- subset(rt, retweet_count > 1000 & is_retweet)[, c("retweet_count", "text")]
+rt2 <- subset(usr, retweet_count > 100 & favorite_count > 100)
+rt2[, c("retweet_count", "text")]
 ## sort colums
-rt2[order(rt2$retweet_count, decreasing = TRUE),]
+rt2[order(rt2$retweet_count, decreasing = TRUE), c("retweet_count", "text")]
 
 ## regular language
-rt[rt$retweet_count > 1000, ]
+
 ## 18 years old; 18 year old; 18-year-old; 18years old; 18yearsold
 rt_age <- subset(rt, grepl("[0-9]+(\\s|-)?years?(\\s|-)?old", text, ignore.case = TRUE))
 rt_age$text <- sub("coronavirus|COVID\\s+|COVID19", "COVID-19", rt_age$text)
@@ -84,13 +84,13 @@ dfs <- lapply(wds, data.frame, stringsAsFactors = F)
 dfs <- dplyr::bind_rows(dfs)
 
 words <- table(dfs)
-words <- tibble::data_frame(
+words <- tibble::tibble(
   word = names(words),
   n = as.integer(words)
 )
 
 words <- as.data.frame(words)
-words <- words[!words$word %in% c("florida", "#Florida", "football", "gators", "gator", "uf") ,]
+words <- words[!words$word %in% c("COVID", "COVID19", "COVID-19", "covid", "covid19") ,]
 
 ### display word cloud
 
@@ -130,7 +130,6 @@ wv <- quanteda::dfm(rt$text)
 quanteda::textstat_simil(wv[, c("covid", "india")],  method = "cosine", margin = "features")
 
 quanteda::textstat_simil(wv[, c("covid", "china")],  method = "cosine", margin = "features")
-
 
 
 
