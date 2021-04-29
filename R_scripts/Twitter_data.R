@@ -11,6 +11,7 @@ check.packages(c("wordcloud", "ggplot2", "ggthemes", "rtweet", "dplyr", "quanted
 
 
 ################ Obtain tweets ###################
+## get tweets via keywords
 rt <- rtweet::search_tweets(
   "COVID", # key words for searching
   n = 1000, 
@@ -24,6 +25,7 @@ write.csv(rt, "data/COVID_Tweets.csv")
 ## read dataset
 rt <- read.csv("data/COVID_Tweets.csv")
 
+## get tweets via user names
 usr <- rtweet::get_timeline(
   "nytimes", 
   n = 1000, 
@@ -50,11 +52,12 @@ rt2[order(rt2$retweet_count, decreasing = TRUE),]
 rt[rt$retweet_count > 1000, ]
 ## 18 years old; 18 year old; 18-year-old; 18years old; 18yearsold
 rt_age <- subset(rt, grepl("[0-9]+(\\s|-)?years?(\\s|-)?old", text, ignore.case = TRUE))
-rt_age$text <- sub("coronavirus|COVID19|COVID", "COVID-19", rt_age$text)
+rt_age$text <- sub("coronavirus|COVID\\s+|COVID19", "COVID-19", rt_age$text)
 rt_age$text
 
 ## group by
 group_by(rt, is_retweet) %>% summarise(mean = mean(retweet_count))
+group_by(rt, is_retweet) %>% summarise(n = n(retweet_count))
 
 ## visualization
 ggplot(rt, aes(x = is_retweet, fill = is_retweet)) + 
